@@ -1,4 +1,4 @@
-# Alpine Linux boostrap
+# Alpine Linux bootstrap
 
 This repository contains steps to setup a new Alpine Linux system from scratch in less than 5 minutes.
 
