@@ -45,7 +45,6 @@ echo "# Created by setup.sh
         workgroup = MYGROUP
         idmap config * : backend = tdb
 
-# Shares
 [homes]
         browseable = No
         comment = Home Directories
@@ -87,14 +86,14 @@ rc-update add samba default
 # Add normal unix user.
 adduser -h /home/user -s /bin/ash -D $1
 
+# Add user to docker group.
+addgroup $1 docker
+
 # Initialize ssh access for user.
-su $1 -s /bin/ash -c "cd ~ && mkdir .ssh && echo $2 > .ssh/authorized_keys && chmod 700 .ssh && chmod 600 .ssh/authorized_keys"
+su $1 -s /bin/ash -c "cd ~ && mkdir .ssh && echo '$2' > .ssh/authorized_keys && chmod 700 .ssh && chmod 600 .ssh/authorized_keys"
 
 # Unlock user.
 passwd -u $1
 
 # Add samba user.
 smbpasswd -a $1
-
-# Add user to docker group.
-addgroup $1 docker
