@@ -10,7 +10,6 @@ fi
 mv /etc/apk/repositories.default /etc/apk/repositories
 mv /etc/ssh/sshd_config.default /etc/ssh/sshd_config
 mv /etc/samba/smb.conf.default /etc/samba/smb.conf
-mv /etc/postgresql/pg_hba.conf.default /etc/postgresql/pg_hba.conf
 
 # Set to exit on first error.
 set -e
@@ -23,7 +22,7 @@ cat /etc/apk/repositories | grep community | grep -v edge | sed 's/#//' >> /etc/
 
 # Update package list and install system packages.
 apk update
-apk add git build-base samba curl nano docker postgresql
+apk add git build-base samba curl nano docker
 
 # Enable PAX softmode to make Docker work correctly.
 echo "kernel.pax.softmode = 1" > /etc/sysctl.d/01-pax-softmode.conf
@@ -75,27 +74,14 @@ information about administrating Alpine systems.
 See <http://wiki.alpinelinux.org>.
 " > /etc/motd
 
-# Setup PostgreSQL
-/etc/init.d/postgresql setup
-
-# Make a backup of PostgreSQL configs.
-mv /etc/postgresql/pg_hba.conf /etc/postgresql/pg_hba.conf.default
-mv /etc/postgresql/postgresql.conf /etc/postgresql/postgresql.conf.default
-
-# Allow remote logins from eth1.
-echo "host all dbuser $(ifconfig eth1 | grep 'inet addr' | cut -d: -f2 | cut -d ' ' -f1)/16 trust" >> /etc/postgresql/pg_hba.conf
-echo "listen_addresses = 'localhost,$(ifconfig eth1 | grep 'inet addr' | cut -d: -f2 | cut -d ' ' -f1)'" >> /etc/postgresql/postgresql.conf
-
 # Start samba and docker at default runlevel.
 rc-update add docker default
 rc-update add samba default
-rc-update add postgresql default
 
 # Start services.
 /etc/init.d/sshd restart
 /etc/init.d/docker start
 /etc/init.d/samba start
-/etc/init.d/postgresql start
 
 # Add normal unix user.
 adduser -h /home/user -s /bin/ash -D $1
