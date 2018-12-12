@@ -22,7 +22,7 @@ cat /etc/apk/repositories | grep community | grep -v edge | sed 's/#//' >> /etc/
 
 # Update package list and install system packages.
 apk update
-apk add git build-base samba curl nano docker
+apk add git openssh-client build-base samba curl nano docker
 
 # Enable PAX softmode to make Docker work correctly.
 echo "kernel.pax.softmode = 1" > /etc/sysctl.d/01-pax-softmode.conf
